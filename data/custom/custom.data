@@ -1,0 +1,4 @@
+classes=39
+train=data/custom/train_sd.txt
+valid=data/custom/train_sd.txt
+names=data/custom/custom.names
