@@ -263,7 +263,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             path = str(Path(path))  # os-agnostic
             parent = str(Path(path).parent) + os.sep
             if os.path.isfile(path):  # file
-                with open(path, 'r') as f:
+                with open(path, 'r', encoding='utf-8') as f:
                     f = f.read().splitlines()
                     f = [x.replace('./', parent) if x.startswith('./') else x for x in f]  # local to global path
             elif os.path.isdir(path):  # folder
