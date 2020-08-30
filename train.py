@@ -1,3 +1,4 @@
+"test"
 import argparse
 
 import torch.distributed as dist
