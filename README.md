@@ -3,7 +3,7 @@ This repo contains Ultralytics inference and training code for YOLOv3 in PyTorch
 ##NW Train, Detect
 ```bash
 $ python train.py --cfg cfg/yolov3_custom.cfg --data data/custom/custom.data --weights weights/yolov3.weights --batch-size 4 --epochs 100
-$ pythone detect.py --cfg cfg/yolov3_custom.cfg --source data/custom/sample --weights weights/custom/last.pt
+$ python detect.py --cfg cfg/yolov3_custom.cfg --source data/custom/sample --weights weights/custom/last.pt
 ```
 
 ## Requirements
