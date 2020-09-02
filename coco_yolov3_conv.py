@@ -149,7 +149,7 @@ def write_anno_file(name_box_id, output, individual):
                         f.write('\n')
         f.close()
 def write_path_file(name_box_id, output):
-    v3_path = '../data/yolo_cordinate/yolov3'
+    v3_path = './data/custom'
     if os.path.isdir(v3_path) is False:
         os.mkdir(v3_path)
     output = os.path.join(v3_path, output)
@@ -193,7 +193,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('TkAgg')
 
-file = 'S_8544.42-2090_01_023'
+
+
+file = 'S_8523.51-1000_01_366.png'
 for idx, key in enumerate(name_box_id.keys()):
     if file in key:
         img = Image.open(key)
