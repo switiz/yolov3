@@ -1,6 +1,19 @@
-from utils.google_utils import *
-from utils.layers import *
-from utils.parse_config import *
+
+# coalb detect logic
+try:
+    import google.colab
+    IN_COLAB = True
+except:
+    IN_COLAB = False
+
+if IN_COLAB:
+    from xray_yolov3.utils.google_utils import *
+    from xray_yolov3.utils.layers import *
+    from xray_yolov3.utils.parse_config import *
+else:
+    from utils.google_utils import *
+    from utils.layers import *
+    from utils.parse_config import *
 
 ONNX_EXPORT = False
 

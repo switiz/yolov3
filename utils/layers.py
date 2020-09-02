@@ -1,6 +1,15 @@
 import torch.nn.functional as F
 
-from utils.utils import *
+try:
+    import google.colab
+    IN_COLAB = True
+except:
+    IN_COLAB = False
+
+if IN_COLAB:
+    from xray_yolov3.utils.utils import *
+else:
+    from utils.utils import *
 
 
 def make_divisible(v, divisor):

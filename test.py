@@ -3,10 +3,21 @@ import json
 
 from torch.utils.data import DataLoader
 
-from models import *
-from utils.datasets import *
-from utils.utils import *
+# coalb detect logic
+try:
+    import google.colab
+    IN_COLAB = True
+except:
+    IN_COLAB = False
 
+if IN_COLAB:
+    from xray_yolov3.models import *
+    from xray_yolov3.utils.datasets import *
+    from xray_yolov3.utils.utils import *
+else:
+    from models import *
+    from utils.datasets import *
+    from utils.utils import *
 
 def test(cfg,
          data,

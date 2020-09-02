@@ -1,8 +1,19 @@
 import argparse
 
-from models import *  # set ONNX_EXPORT in models.py
-from utils.datasets import *
-from utils.utils import *
+try:
+    import google.colab
+    IN_COLAB = True
+except:
+    IN_COLAB = False
+
+if IN_COLAB:
+    from xray_yolov3.models import *  # set ONNX_EXPORT in models.py
+    from xray_yolov3.utils.datasets import *
+    from xray_yolov3.utils.utils import *
+else:
+    from models import *  # set ONNX_EXPORT in models.py
+    from utils.datasets import *
+    from utils.utils import *
 
 
 def detect(save_img=False):
