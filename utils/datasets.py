@@ -14,6 +14,7 @@ from PIL import Image, ExifTags
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
+
 try:
     import google.colab
     IN_COLAB = True
@@ -34,6 +35,9 @@ for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
         break
 
+def hangulFilePathImageRead(filePath) :
+    numpyArray = np.fromfile(filePath, np.uint8)
+    return cv2.imdecode(numpyArray, cv2.IMREAD_UNCHANGED)
 
 def exif_size(img):
     # Returns exif-corrected PIL size
@@ -531,7 +535,6 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         for i, l in enumerate(label):
             l[:, 0] = i  # add target image index for build_targets()
         return torch.stack(img, 0), torch.cat(label, 0), path, shapes
-
 
 def load_image(self, index):
     # loads 1 image from dataset, returns img, original hw, resized hw

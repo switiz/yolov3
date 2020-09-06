@@ -177,10 +177,16 @@ def detect(save_img=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', type=str, default='cfg/yolov3-spp.cfg', help='*.cfg path')
-    parser.add_argument('--names', type=str, default='data/coco.names', help='*.names path')
-    parser.add_argument('--weights', type=str, default='weights/yolov3-spp-ultralytics.pt', help='weights path')
-    parser.add_argument('--source', type=str, default='data/samples', help='source')  # input file/folder, 0 for webcam
+    if IN_COLAB:
+        parser.add_argument('--cfg', type=str, default='xray_yolov3/cfg/yolov3-spp.cfg', help='*.cfg path')
+        parser.add_argument('--names', type=str, default='xray_yolov3/data/custom/custom.names', help='*.names path')
+        parser.add_argument('--weights', type=str, default='xray_yolov3/weights/best.pt', help='weights path')
+        parser.add_argument('--source', type=str, default='xray_yolov3/data/custom', help='source')  # input file/folder, 0 for webcam
+    else:
+        parser.add_argument('--cfg', type=str, default='cfg/yolov3-spp.cfg', help='*.cfg path')
+        parser.add_argument('--names', type=str, default='data/custom/custom.names', help='*.names path')
+        parser.add_argument('--weights', type=str, default='weights/best.pt', help='weights path')
+        parser.add_argument('--source', type=str, default='data/custom', help='source')  # input file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='output', help='output folder')  # output folder
     parser.add_argument('--img-size', type=int, default=512, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.3, help='object confidence threshold')
@@ -193,7 +199,7 @@ if __name__ == '__main__':
     parser.add_argument('--classes', nargs='+', type=int, help='filter by class')
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
-    opt = parser.parse_args()
+    opt, unknown = parser.parse_known_args()
     opt.cfg = check_file(opt.cfg)  # check file
     opt.names = check_file(opt.names)  # check file
     print(opt)

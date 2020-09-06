@@ -1,6 +1,6 @@
 classes=39
 train=data/custom/train_sd.txt
-valid=data/custom/train_sd.txt
+valid=data/custom/val_sd.txt
 names=data/custom/custom.names
 train_colab=xray_yolov3/data/custom/train_sd_c.txt
 valid_colab=xray_yolov3/data/custom/train_sd_c.txt

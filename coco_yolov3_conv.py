@@ -21,6 +21,10 @@ from collections import defaultdict
 from pycocotools.coco import COCO
 from tqdm import tqdm
 
+import numpy as np
+from sklearn.model_selection import train_test_split
+import pandas as pd
+
 def check_dir(path):
     if path == 'colab':
         images_dir_path = '/content/drive/' + 'Shared drives' + '/YS_NW/2.Data/Train/Data'
@@ -34,6 +38,9 @@ def check_dir(path):
     elif path == 'local_c':
             images_dir_path = 'C:/Local/Train/Data'
             json_file_path = 'D:/Local/Train/Meta/CoCo/coco_rapiscan.json'
+    elif path == 'local_e':
+        images_dir_path = 'E:/dataset/xray/Train/Data'
+        json_file_path = 'E:/dataset/xray/Train/Meta/CoCo/coco_rapiscan.json'
 
     return images_dir_path, json_file_path
 
@@ -110,6 +117,7 @@ def make_coco_to_yolo(cat_type):
             continue
         name = os.path.join(images_dir_path, file_path).replace('\\', '/')
         name_box_id[name].append([convert_labels(ant['bbox']), index_change(ant['category_id'])])
+
     return name_box_id
 
 def write_anno_file(name_box_id, output, individual):
@@ -148,28 +156,76 @@ def write_anno_file(name_box_id, output, individual):
                     if idx!=len(box_infos)-1:
                         f.write('\n')
         f.close()
-def write_path_file(name_box_id, output):
+def write_path_file(train_data, val_data, output, valout):
     v3_path = './data/custom'
     if os.path.isdir(v3_path) is False:
         os.mkdir(v3_path)
     output = os.path.join(v3_path, output)
+    valout = os.path.join(v3_path, valout)
 
     """write to txt"""
     with open(output, 'w', encoding='utf-8') as f:
-        keys = name_box_id.keys()
+        keys = train_data.keys()
         for idx, key in enumerate(keys):
             f.write(key)
             if idx !=len(keys) -1:
                 f.write('\n')
     f.close()
 
+    """write to txt"""
+    with open(valout, 'w', encoding='utf-8') as f:
+        keys = val_data.keys()
+        for idx, key in enumerate(keys):
+            f.write(key)
+            if idx !=len(keys) -1:
+                f.write('\n')
+    f.close()
+
+"""split tran / val"""
+def train_val_split(name_box_id):
+
+    ### add group
+    dictlist = []
+    for key, value in name_box_id.items():
+        temp = [key, value]
+        dictlist.append(temp)
+
+    dictlist = np.array(dictlist, dtype=object)
+
+    df = pd.DataFrame(dictlist, columns=['data', 'label'])
+    df['grp'] = df['data'].str.split('/').str[5] + "_" + df['data'].str.split('/').str[6] #for local
+    # df['grp'] = df['data'].str.split('/').str[5] + "_" + df['data'].str.split('/').str[6] #for google drive
+
+    name_box_id = df.values.tolist()
+
+    name_box_id = np.array(name_box_id, dtype=object)
+    grp = name_box_id[:,-1]
+
+    "split by groups (ex: Battery_Single Others)"
+    x_train, x_val, y_train, y_val = train_test_split(name_box_id[:,0], name_box_id[:,1], test_size=0.25, stratify=grp)
+
+    train_data = defaultdict(list)
+    for i in range(len(x_train)):
+        print(i)
+        train_data[x_train[i]].append(y_train[i])
+
+    val_data = defaultdict(list)
+    for i in range(len(x_val)):
+        print(i)
+        val_data[x_val[i]].append(y_val[i])
+
+    return train_data, val_data
+
+
 if __name__ == '__main__':
     """parameters"""
-    images_dir_path, json_file_path = check_dir('google_drive')
+    images_dir_path, json_file_path = check_dir('local_e')
     #    output_paths = ['train_sd.txt', 'train_so.txt', 'train_md.txt', 'train_mo.txt']
     #    cat_types = ['Single_Default', 'Single_Other', 'Multiple_Categories', 'Multiple_Other']
     output_paths = ['train_sd.txt']
+    val_paths = ['val_sd.txt']
     cat_types = ['Single_Default']
+
 
     """load json file"""
     id_name = dict()
@@ -180,28 +236,31 @@ if __name__ == '__main__':
     """generate labels"""
     images = data['images']
     annotations = data['annotations']
-    for ouput, cat_type in zip(output_paths, cat_types):
+    for ouput, valout, cat_type in zip(output_paths, val_paths, cat_types):
         name_box_id = make_coco_to_yolo(cat_type)
         write_anno_file(name_box_id, ouput, True)
-        write_path_file(name_box_id, ouput)
+
+        "split train/val"
+        train_data, val_data = train_val_split(name_box_id)
+        write_path_file(train_data, val_data, ouput, valout)
 
 
 #check file
-import cv2
-from PIL import Image, ImageDraw, ImageFont
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('TkAgg')
-
-
-
-file = 'S_8523.51-1000_01_366.png'
-for idx, key in enumerate(name_box_id.keys()):
-    if file in key:
-        img = Image.open(key)
-        info = name_box_id[key]
-        draw = ImageDraw.Draw(img)
-        data = from_yolo_to_cor(info[0][0])
-        x1,y1,x2,y2 = data[0],data[1],data[2],data[3]
-        draw.rectangle((x1,y1,x2,y2), outline='red', width=3)
-        img.show()
+# import cv2
+# from PIL import Image, ImageDraw, ImageFont
+# import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use('TkAgg')
+#
+#
+#
+# file = 'S_8523.51-1000_01_366.png'
+# for idx, key in enumerate(name_box_id.keys()):
+#     if file in key:
+#         img = Image.open(key)
+#         info = name_box_id[key]
+#         draw = ImageDraw.Draw(img)
+#         data = from_yolo_to_cor(info[0][0])
+#         x1,y1,x2,y2 = data[0],data[1],data[2],data[3]
+#         draw.rectangle((x1,y1,x2,y2), outline='red', width=3)
+#         img.show()
