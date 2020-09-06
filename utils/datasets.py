@@ -14,10 +14,6 @@ from PIL import Image, ExifTags
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-t = hangulFilePathImageRead('G:/공유 드라이브/YS_NW/2.Data/Train/Data/Alcohol/Single_Default/H_2905.12-2090_01_170.png')
-
-t = hangulFilePathImageRead('E:/dataset/xray/Train/Data/Alcohol/Single_Default/H_2905.12-2090_01_170.png')
-
 try:
     import google.colab
     IN_COLAB = True
